@@ -1,0 +1,109 @@
+specification: FinOps Framework
+specificationVersion: '1.0'
+schema: https://www.finops.org/framework/
+provider: ENTSO-E
+providerId: entso-e
+created: '2026-07-11'
+modified: '2026-07-11'
+reconciled: true
+tags:
+- Electricity
+- Energy Markets
+- Day-Ahead Prices
+- Balancing
+- Open Data
+- FinOps
+- Cost Management
+- FOCUS
+description: >-
+  FinOps view of consuming the ENTSO-E Transparency Platform API. There is no
+  vendor invoice at any usage level - the platform is a regulatory
+  publication under EU Regulation 543/2013 and the API is free after
+  registration. All cost of ownership therefore sits on the consumer side:
+  the compute and storage to poll the API within its 400 requests/minute cap,
+  parse IEC 62325 XML (and unzip the imbalance/outage archives), and retain
+  history pulled in one-year-per-request windows. Teams building price-aware
+  products (dynamic kWh tariffs, battery dispatch, balancing analytics)
+  typically ingest each bidding zone daily after day-ahead publication and
+  backfill history once, which keeps request volumes trivially small.
+notes: >-
+  Because rate and range limits - not billing - are the scarce resource,
+  optimize for fewer, larger queries (full one-year ranges on backfills) and
+  cache responses; re-polling published history yields identical documents.
+  The File Library covers bulk needs without consuming API rate budget.
+sources:
+- https://transparency.entsoe.eu/
+- https://transparencyplatform.zendesk.com/hc/en-us
+- https://focus.finops.org/focus-specification/v1-3/
+alignedWith:
+  framework: FinOps Foundation Framework
+  frameworkUrl: https://www.finops.org/framework/
+  dataSpec: FOCUS
+  dataSpecVersion: '1.3'
+  dataSpecUrl: https://focus.finops.org/focus-specification/v1-3/
+publisherName: ENTSO-E
+serviceCategory: Analytics and Data
+billingModel:
+  pricingCategory: Free
+  billingFrequency: None
+  billingCurrency: EUR
+  chargeCategories: []
+focusColumns:
+  ServiceName: ENTSO-E Transparency Platform API
+  ServiceCategory: Analytics and Data
+  ProviderName: ENTSO-E
+  PublisherName: ENTSO-E
+  InvoiceIssuerName: None (no invoice issued)
+  BillingCurrency: EUR
+  ChargeCategory: None
+  PricingCategory: Free
+meters:
+- name: api_requests
+  description: >-
+    Requests against the single /api endpoint. Never billed, but capped at
+    400/minute per IP/token - the budget to allocate across internal
+    consumers sharing a token.
+  unit: requests
+  aggregation: sum
+  dimensions:
+  - token
+  - ip-address
+  - documentType
+- name: ingest_compute
+  description: Consumer-side compute for polling, XML parsing, and ZIP extraction (your infrastructure, not ENTSO-E's).
+  unit: hours
+  aggregation: sum
+  dimensions:
+  - pipeline
+- name: storage
+  description: Consumer-side storage of retained market documents and derived time series.
+  unit: bytes
+  aggregation: sum
+  dimensions:
+  - dataset
+  - bidding-zone
+principles:
+- name: Visibility
+  description: >-
+    Track request counts per documentType and bidding zone against the
+    400/minute cap; alert on 429 bans and on Acknowledgement 999 responses
+    that indicate wasted polling of unpublished data.
+- name: Allocation
+  description: >-
+    If multiple internal teams share one security token, meter and allocate
+    the request budget per pipeline; consider separate registrations per
+    team to isolate rate budgets.
+- name: Optimization
+  description: >-
+    Cache aggressively - published market documents are immutable; backfill
+    in maximal one-year windows; schedule day-ahead price pulls once after
+    the daily publication instead of polling; use the File Library for bulk
+    history.
+- name: Accountability
+  description: >-
+    Assign an owner per ingest pipeline; review polling schedules against
+    actual publication cadences so free data does not turn into avoidable
+    infrastructure spend.
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

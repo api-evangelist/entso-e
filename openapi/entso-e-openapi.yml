@@ -1,0 +1,620 @@
+openapi: 3.0.3
+info:
+  title: ENTSO-E Transparency Platform RESTful API
+  description: >-
+    The ENTSO-E Transparency Platform RESTful API provides programmatic access
+    to the central European electricity market dataset published under EU
+    Regulation 543/2013 - day-ahead prices, system load, generation,
+    transmission, balancing, outages, and congestion management data for
+    bidding zones, control areas, and borders across Europe. The API is
+    deliberately NOT a resource-per-path REST design: it exposes a single
+    endpoint (GET or POST /api) and the data item you receive is selected by
+    coded query parameters - documentType (e.g. A44 = price document, A65 =
+    system total load, A75 = actual generation per type, A85 = imbalance
+    prices), processType (e.g. A01 = day ahead, A16 = realised), psrType
+    (production types B01-B24), businessType, and domain parameters populated
+    with EIC area codes (e.g. 10YCZ-CEPS-----N). Responses are XML market
+    documents defined by the IEC 62325-451 standards (Publication_MarketDocument,
+    GL_MarketDocument, Balancing_MarketDocument, TransmissionNetwork_MarketDocument);
+    a few data items (imbalance prices and volumes, outages) return a ZIP archive
+    of XML documents. All timestamps are UTC. Rejections and empty results return
+    an Acknowledgement_MarketDocument with a Reason code (999 = no matching data
+    found). Access is free - register on the Transparency Platform, request
+    Restful API access from transparency@entsoe.eu, and generate a security
+    token under My Account Settings.
+
+
+    Common data-item recipes (mandatory parameters beyond securityToken and
+    periodStart/periodEnd):
+
+    - Day-ahead prices [12.1.D] - documentType=A44, in_Domain and out_Domain
+    set to the SAME bidding-zone EIC code. One-year range limit.
+
+    - Actual total load [6.1.A] - documentType=A65, processType=A16,
+    outBiddingZone_Domain. Day-ahead load forecast [6.1.B] uses processType=A01;
+    week/month/year-ahead use A31/A32/A33.
+
+    - Actual generation per production type [16.1.B&C] - documentType=A75,
+    processType=A16, in_Domain; optional psrType filters to one production type.
+
+    - Installed generation capacity aggregated [14.1.A] - documentType=A68,
+    processType=A33, in_Domain.
+
+    - Wind and solar forecast [14.1.D] - documentType=A69, processType=A01
+    (or A40 intraday), in_Domain.
+
+    - Cross-border physical flows [12.1.G] - documentType=A11, in_Domain,
+    out_Domain (one direction per request; swap domains for the other).
+
+    - Forecasted transfer capacities [11.1.A] - documentType=A61,
+    contract_MarketAgreement.Type (A01 daily - A04 yearly), in_Domain, out_Domain.
+
+    - Accepted aggregated offers [17.1.D] - documentType=A82,
+    controlArea_Domain; optional businessType (A95 FCR, A96 FRR, A97
+    replacement reserve, A98 interconnector trading).
+
+    - Activated balancing energy [17.1.E] - documentType=A83, controlArea_Domain.
+
+    - Imbalance prices [17.1.G] - documentType=A85, controlArea_Domain
+    (returns ZIP of XML).
+
+    - Total imbalance volumes [17.1.H] - documentType=A86, controlArea_Domain
+    (returns ZIP of XML).
+
+    - Contracted reserves [17.1.B] / prices of contracted reserves [17.1.C] -
+    documentType=A81 / A89, type_MarketAgreement.Type, controlArea_Domain.
+  version: '1.0'
+  contact:
+    name: ENTSO-E Transparency Platform Helpdesk
+    email: transparency@entsoe.eu
+    url: https://transparency.entsoe.eu/
+  termsOfService: https://transparency.entsoe.eu/content/static_content/Static%20content/terms%20and%20conditions/terms%20and%20conditions.html
+externalDocs:
+  description: Transparency Platform RESTful API user guide (knowledge base)
+  url: https://transparencyplatform.zendesk.com/hc/en-us
+servers:
+  - url: https://web-api.tp.entsoe.eu
+    description: Transparency Platform production web API
+security:
+  - securityToken: []
+tags:
+  - name: Market Data Query
+    description: >-
+      Single query endpoint for every Transparency Platform data item. The
+      documentType, processType, and domain parameters select the dataset.
+paths:
+  /api:
+    get:
+      operationId: queryMarketDocument
+      tags:
+        - Market Data Query
+      summary: Query Transparency Platform data (GET)
+      description: >-
+        Retrieves one Transparency Platform data item as an IEC 62325 XML
+        market document (or ZIP of XML for imbalance and outage items). The
+        combination of documentType, processType, businessType, and domain
+        parameters selects the data item; periodStart/periodEnd (or
+        timeInterval) bound the query window. Parameter names are
+        case-sensitive and must start lowercase on GET. Standard (table) data
+        items are limited to a one-year range per request; document-based
+        (curve) items are limited to 100 documents per request (200 for
+        outages), with an offset parameter available on some items to page up
+        to 4,900 documents. Exceeding a limit, omitting a mandatory parameter,
+        or matching no data returns an Acknowledgement_MarketDocument with the
+        reason.
+      parameters:
+        - name: securityToken
+          in: query
+          required: true
+          description: >-
+            Personal API token. Free - register on the Transparency Platform,
+            email transparency@entsoe.eu with subject "Restful API access",
+            then generate the token under My Account Settings. Missing or
+            invalid tokens receive HTTP 401.
+          schema:
+            type: string
+        - name: documentType
+          in: query
+          required: true
+          description: >-
+            Coded document type selecting the data item family. Key codes:
+            A44 price document (day-ahead prices), A65 system total load,
+            A75 actual generation per type, A73 actual generation (per unit),
+            A74 wind and solar generation, A71 generation forecast, A69 wind
+            and solar forecast, A68 installed generation per type, A72
+            reservoir filling information, A70 load forecast margin, A11
+            aggregated energy data report (physical flows), A61 estimated net
+            transfer capacity, A09 finalised schedule (commercial exchanges),
+            A31 agreed capacity, A25 allocation result document, A26 capacity
+            document, A81 contracted reserves, A82 accepted offers, A83
+            activated balancing quantities, A84 activated balancing prices,
+            A85 imbalance prices, A86 imbalance volume, A87 financial
+            situation, A88 cross border balancing, A89 contracted reserve
+            prices, A15 acquiring system operator reserve schedule (procured
+            balancing capacity), A76-A80 unavailability (outage) documents.
+          schema:
+            type: string
+            enum: [A09, A11, A15, A24, A25, A26, A31, A37, A38, A44, A61, A63,
+                   A65, A68, A69, A70, A71, A72, A73, A74, A75, A76, A77, A78,
+                   A79, A80, A81, A82, A83, A84, A85, A86, A87, A88, A89, A90,
+                   A91, A92, A93, A94, A95, B11, B17, B45]
+          example: A44
+        - name: processType
+          in: query
+          required: false
+          description: >-
+            Process the data belongs to. A01 day ahead, A02 intra day
+            incremental, A16 realised, A18 intraday total, A31 week ahead,
+            A32 month ahead, A33 year ahead, A39 synchronisation process,
+            A40 intraday process, A46 replacement reserve, A47 manual
+            frequency restoration reserve, A51 automatic frequency restoration
+            reserve, A52 frequency containment reserve, A56 frequency
+            restoration reserve, A60 scheduled activation mFRR, A61 direct
+            activation mFRR, A67 central selection aFRR, A68 local selection
+            aFRR.
+          schema:
+            type: string
+            enum: [A01, A02, A16, A18, A31, A32, A33, A39, A40, A46, A47,
+                   A51, A52, A56, A60, A61, A67, A68]
+          example: A16
+        - name: businessType
+          in: query
+          required: false
+          description: >-
+            Business type filter used mainly by balancing and outage items,
+            e.g. A95 frequency containment reserve, A96 automatic frequency
+            restoration reserve, A97 manual frequency restoration reserve,
+            A98 replacement reserve, A53 planned maintenance, A54 unplanned
+            outage, A19 balance energy deviation.
+          schema:
+            type: string
+          example: A96
+        - name: psrType
+          in: query
+          required: false
+          description: >-
+            Power system resource (production) type filter. B01 biomass, B02
+            fossil brown coal/lignite, B04 fossil gas, B05 fossil hard coal,
+            B09 geothermal, B10 hydro pumped storage, B11 hydro run-of-river,
+            B12 hydro water reservoir, B14 nuclear, B16 solar, B17 waste, B18
+            wind offshore, B19 wind onshore, B20 other, plus A03 mixed, A04
+            generation, A05 load.
+          schema:
+            type: string
+          example: B16
+        - name: in_Domain
+          in: query
+          required: false
+          description: >-
+            EIC code of the in area (bidding zone, control area, or border
+            end). For day-ahead prices (A44) in_Domain and out_Domain must be
+            the same bidding-zone EIC code, e.g. 10YCZ-CEPS-----N.
+          schema:
+            type: string
+          example: 10YCZ-CEPS-----N
+        - name: out_Domain
+          in: query
+          required: false
+          description: >-
+            EIC code of the out area. For border data items (physical flows,
+            transfer capacities, schedules) the API returns one direction per
+            request; swap in_Domain and out_Domain for the other direction.
+          schema:
+            type: string
+          example: 10YSK-SEPS-----K
+        - name: outBiddingZone_Domain
+          in: query
+          required: false
+          description: EIC code of the bidding zone for load data items (documentType A65, A70).
+          schema:
+            type: string
+          example: 10YCZ-CEPS-----N
+        - name: biddingZone_Domain
+          in: query
+          required: false
+          description: EIC code of the bidding zone, used by outage and some generation items.
+          schema:
+            type: string
+        - name: controlArea_Domain
+          in: query
+          required: false
+          description: >-
+            EIC code of the control / market balance area for balancing data
+            items (documentType A81-A89).
+          schema:
+            type: string
+          example: 10YCZ-CEPS-----N
+        - name: area_Domain
+          in: query
+          required: false
+          description: EIC code of the scheduling area, used by procured balancing capacity (A15).
+          schema:
+            type: string
+        - name: acquiring_Domain
+          in: query
+          required: false
+          description: EIC code of the acquiring area for cross-border balancing (A88).
+          schema:
+            type: string
+        - name: connecting_Domain
+          in: query
+          required: false
+          description: EIC code of the connecting area for cross-border balancing (A88).
+          schema:
+            type: string
+        - name: periodStart
+          in: query
+          required: false
+          description: >-
+            Start of the query window in yyyyMMddHHmm format, interpreted as
+            UTC (e.g. 201512312300). Use together with periodEnd; cannot be
+            combined with timeInterval.
+          schema:
+            type: string
+            pattern: '^[0-9]{12}$'
+          example: '202506302200'
+        - name: periodEnd
+          in: query
+          required: false
+          description: >-
+            End of the query window in yyyyMMddHHmm format, interpreted as
+            UTC. Use together with periodStart; cannot be combined with
+            timeInterval.
+          schema:
+            type: string
+            pattern: '^[0-9]{12}$'
+          example: '202507012200'
+        - name: timeInterval
+          in: query
+          required: false
+          description: >-
+            ISO 8601 interval alternative to periodStart/periodEnd, e.g.
+            2015-12-31T23:00Z/2016-12-31T23:00Z. Cannot be combined with
+            periodStart/periodEnd.
+          schema:
+            type: string
+        - name: contract_MarketAgreement.Type
+          in: query
+          required: false
+          description: >-
+            Contract type for capacity allocation items (A61, A31, A09 and
+            others). A01 daily, A02 weekly, A03 monthly, A04 yearly, A05
+            total, A06 long term, A07 intraday.
+          schema:
+            type: string
+            enum: [A01, A02, A03, A04, A05, A06, A07]
+          example: A01
+        - name: type_MarketAgreement.Type
+          in: query
+          required: false
+          description: >-
+            Contract type for balancing reserve items (A81, A89). A01 daily,
+            A02 weekly, A03 monthly, A04 yearly, A06 long term, A13 hourly.
+          schema:
+            type: string
+            enum: [A01, A02, A03, A04, A05, A06, A07, A13]
+        - name: auction.Type
+          in: query
+          required: false
+          description: Auction type for capacity allocation items. A01 implicit, A02 explicit.
+          schema:
+            type: string
+            enum: [A01, A02]
+        - name: auction.Category
+          in: query
+          required: false
+          description: Auction category. A01 base, A02 peak, A03 off peak, A04 hourly.
+          schema:
+            type: string
+            enum: [A01, A02, A03, A04]
+        - name: classificationSequence_AttributeInstanceComponent.Position
+          in: query
+          required: false
+          description: Classification sequence position for explicit allocation results.
+          schema:
+            type: integer
+        - name: registeredResource
+          in: query
+          required: false
+          description: EIC code of a specific generation unit or transmission asset.
+          schema:
+            type: string
+        - name: docStatus
+          in: query
+          required: false
+          description: >-
+            Document status filter, mainly for outages. A01 intermediate, A02
+            final, A05 active, A09 cancelled, A13 withdrawn, X01 estimated.
+          schema:
+            type: string
+            enum: [A01, A02, A05, A09, A13, X01]
+        - name: standard_MarketProduct
+          in: query
+          required: false
+          description: Standard market product filter for balancing energy items (A01 standard, A02 specific, A03 integrated process, A04 local).
+          schema:
+            type: string
+        - name: original_MarketProduct
+          in: query
+          required: false
+          description: Original market product filter for balancing energy items.
+          schema:
+            type: string
+        - name: direction
+          in: query
+          required: false
+          description: Flow direction filter for balancing items. A01 up, A02 down, A03 symmetric.
+          schema:
+            type: string
+            enum: [A01, A02, A03]
+        - name: offset
+          in: query
+          required: false
+          description: >-
+            Paging offset for document-limited items (outages, procured
+            balancing capacity, contracted reserves). Range 0-4800; offset=n
+            returns documents n+1 through n+100 (n+200 for outages), so at
+            most 4,900 documents are reachable per query.
+          schema:
+            type: integer
+            minimum: 0
+            maximum: 4800
+        - name: periodStartUpdate
+          in: query
+          required: false
+          description: Start of the publication/update window (yyyyMMddHHmm) for outage items; cannot be combined with timeIntervalUpdate.
+          schema:
+            type: string
+            pattern: '^[0-9]{12}$'
+        - name: periodEndUpdate
+          in: query
+          required: false
+          description: End of the publication/update window (yyyyMMddHHmm) for outage items; cannot be combined with timeIntervalUpdate.
+          schema:
+            type: string
+            pattern: '^[0-9]{12}$'
+        - name: timeIntervalUpdate
+          in: query
+          required: false
+          description: ISO 8601 publication/update interval for outage items; cannot be combined with periodStartUpdate/periodEndUpdate.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: >-
+            Matching data as an IEC 62325 XML market document. Load and
+            generation items return a GL_MarketDocument; prices, flows,
+            capacities, and schedules return a Publication_MarketDocument;
+            balancing items return a Balancing_MarketDocument; grid
+            unavailability returns a TransmissionNetwork_MarketDocument.
+            Imbalance prices (A85), imbalance volumes (A86), and outage
+            documents are delivered as a ZIP archive of XML files. Note that
+            some rejections (including "no matching data found", Reason code
+            999) are returned as an Acknowledgement_MarketDocument.
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/MarketDocument'
+            application/zip:
+              schema:
+                type: string
+                format: binary
+                description: ZIP archive of IEC 62325 XML market documents.
+        '400':
+          description: >-
+            Request rejected - missing or duplicate mandatory parameters,
+            wrong parameter case, range over the one-year limit, or more than
+            the allowed number of matching documents. Body is an
+            Acknowledgement_MarketDocument stating the reason.
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/AcknowledgementMarketDocument'
+        '401':
+          description: Missing or invalid securityToken (including suspended accounts).
+        '429':
+          description: >-
+            Too many requests - more than 400 requests per minute from one IP
+            address or security token results in a 10-minute ban with the
+            message "Max allowed requests per minute from each unique IP is
+            max up to 400 only".
+    post:
+      operationId: queryMarketDocumentPost
+      tags:
+        - Market Data Query
+      summary: Query Transparency Platform data (POST)
+      description: >-
+        Same query capability as GET, expressed as an IEC 62325-451-5
+        StatusRequest_MarketDocument XML body in which each query parameter is
+        an AttributeInstanceComponent (attribute/attributeValue pair, with
+        parameter names capitalized, e.g. DocumentType, In_Domain,
+        TimeInterval). The security token is passed in the SECURITY_TOKEN
+        request header instead of the query string.
+      security: []
+      parameters:
+        - name: SECURITY_TOKEN
+          in: header
+          required: true
+          description: Personal API token (POST method equivalent of the securityToken query parameter).
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/StatusRequestMarketDocument'
+      responses:
+        '200':
+          description: Matching data as an IEC 62325 XML market document or ZIP archive (see GET).
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/MarketDocument'
+            application/zip:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Request rejected; body is an Acknowledgement_MarketDocument stating the reason.
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/AcknowledgementMarketDocument'
+        '401':
+          description: Missing or invalid SECURITY_TOKEN header.
+        '429':
+          description: More than 400 requests per minute from one IP address or security token.
+components:
+  securitySchemes:
+    securityToken:
+      type: apiKey
+      in: query
+      name: securityToken
+      description: >-
+        Free personal token issued after registering on the Transparency
+        Platform and requesting Restful API access from transparency@entsoe.eu.
+  schemas:
+    MarketDocument:
+      type: object
+      description: >-
+        An IEC 62325-451 market document. The concrete root element depends on
+        the data item queried - Publication_MarketDocument (prices, flows,
+        capacities, schedules; namespace urn:iec62325.351:tc57wg16:451-3),
+        GL_MarketDocument (load and generation; 451-6 generation-load),
+        Balancing_MarketDocument (balancing; 451-6 balancing),
+        TransmissionNetwork_MarketDocument, or Unavailability_MarketDocument
+        (outages, inside ZIP). All share the mRID/type/sender/receiver/
+        period/TimeSeries structure below; TimeSeries Points carry
+        position/quantity pairs, or position/price.amount (EUR per MWh) for
+        price documents.
+      properties:
+        mRID:
+          type: string
+          description: Unique identifier of the returned document.
+        revisionNumber:
+          type: integer
+        type:
+          type: string
+          description: Document type code (mirrors the documentType query parameter, e.g. A44).
+        process.processType:
+          type: string
+          description: Process type code (e.g. A01 day ahead, A16 realised).
+        sender_MarketParticipant.mRID:
+          type: string
+          description: EIC code of the sender (the Transparency Platform, 10X1001A1001A450).
+        receiver_MarketParticipant.mRID:
+          type: string
+        createdDateTime:
+          type: string
+          format: date-time
+        period.timeInterval:
+          type: object
+          description: Overall time interval of the returned data (UTC).
+          properties:
+            start:
+              type: string
+            end:
+              type: string
+        TimeSeries:
+          type: array
+          description: >-
+            One or more time series. Each series identifies the area(s) via
+            in_Domain.mRID / out_Domain.mRID / outBiddingZone_Domain.mRID,
+            the measure unit (e.g. MAW, MWH, EUR), currency for price
+            documents, the market time unit resolution (e.g. PT15M, PT60M),
+            and a Period containing Point elements.
+          items:
+            type: object
+            properties:
+              mRID:
+                type: string
+              businessType:
+                type: string
+              curveType:
+                type: string
+                description: A01 for all data items except production/generation unit outages (A03).
+              Period:
+                type: object
+                properties:
+                  timeInterval:
+                    type: object
+                    properties:
+                      start:
+                        type: string
+                      end:
+                        type: string
+                  resolution:
+                    type: string
+                    description: Market time unit resolution, e.g. PT15M or PT60M.
+                  Point:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        position:
+                          type: integer
+                        quantity:
+                          type: number
+                          description: Quantity value (MW/MWh items).
+                        price.amount:
+                          type: number
+                          description: Price value for price documents (e.g. day-ahead price in currency per MWh).
+    AcknowledgementMarketDocument:
+      type: object
+      description: >-
+        IEC 62325-451-1 acknowledgement document returned when a request is
+        rejected or matches no data. Reason code 999 with text "No matching
+        data found" indicates an empty result; other reasons include missing
+        mandatory parameters, ranges over the one-year limit, and document
+        counts over the 100/200-document limit.
+      properties:
+        mRID:
+          type: string
+        createdDateTime:
+          type: string
+          format: date-time
+        Reason:
+          type: object
+          properties:
+            code:
+              type: string
+              example: '999'
+            text:
+              type: string
+              example: No matching data found
+    StatusRequestMarketDocument:
+      type: object
+      description: >-
+        IEC 62325-451-5 status request document (namespace
+        urn:iec62325.351:tc57wg16:451-5:statusrequestdocument:4:0) used as the
+        POST body. type is A59; each query parameter is expressed as an
+        AttributeInstanceComponent with capitalized attribute names
+        (DocumentType, ProcessType, In_Domain, Out_Domain, TimeInterval, ...).
+      properties:
+        mRID:
+          type: string
+          example: SampleCallToRestfulApi
+        type:
+          type: string
+          example: A59
+        sender_MarketParticipant.mRID:
+          type: string
+          example: 10X1001A1001A450
+        receiver_MarketParticipant.mRID:
+          type: string
+          example: 10X1001A1001A450
+        createdDateTime:
+          type: string
+          format: date-time
+        AttributeInstanceComponent:
+          type: array
+          items:
+            type: object
+            properties:
+              attribute:
+                type: string
+                example: DocumentType
+              attributeValue:
+                type: string
+                example: A44

@@ -1,0 +1,67 @@
+aid: entso-e
+name: ENTSO-E
+review:
+  question: Does ENTSO-E expose a documented public WebSocket API?
+  answer: false
+  date: '2026-07-11'
+  reviewer: API Evangelist
+  asyncapiSpecCreated: false
+  asyncapiScopeNote: >-
+    No AsyncAPI document was created. The Transparency Platform web API is a
+    synchronous request/response HTTPS interface with no documented WebSocket
+    or Server-Sent Events surface, so there is no event-driven protocol
+    surface in scope for AsyncAPI modeling. Bulk and recurring consumption is
+    served by the file-based ENTSO-E File Library (successor to the retired
+    SFTP service), which is authenticated file download, not streaming.
+findings:
+  summary: >-
+    ENTSO-E does not publish a documented public WebSocket API. The
+    Transparency Platform RESTful API is described in the official user guide
+    as "a synchronous interface" offering only HTTP GET (query parameters on
+    https://web-api.tp.entsoe.eu/api) and HTTP POST (an IEC 62325-451-5
+    StatusRequest_MarketDocument XML body). Responses are complete XML market
+    documents or ZIP archives - there is no streaming, push, subscription, or
+    bidirectional channel of any kind (no ws:// or wss:// endpoint, no SSE,
+    no webhooks). Users needing recurring or bulk data pull the File Library
+    or poll the API within the 400 requests/minute limit.
+  transports:
+  - protocol: REST
+    scheme: https
+    baseURL: https://web-api.tp.entsoe.eu/api
+    documented: true
+    note: Synchronous GET/POST query interface returning IEC 62325 XML or ZIP.
+  - protocol: WebSocket
+    scheme: wss
+    documented: false
+    note: >-
+      No WebSocket endpoint appears in the RESTful API user guide, the
+      Transparency Platform knowledge base, or the Postman reference as of
+      the review date.
+  - protocol: SSE
+    scheme: https
+    documented: false
+    note: No Server-Sent Events or other HTTP streaming surface is documented.
+  endpointsConfirmedRest:
+  - GET  https://web-api.tp.entsoe.eu/api (securityToken + documentType/processType/domain parameters)
+  - POST https://web-api.tp.entsoe.eu/api (SECURITY_TOKEN header + StatusRequest_MarketDocument XML body)
+sources:
+- url: https://transparency.entsoe.eu/content/static_content/Static%20content/web%20api/Guide.html
+  type: Documentation
+  note: >-
+    Canonical guide location; content moved to the Transparency Platform
+    knowledge base in late 2024. The archived full guide states "The restful
+    API is a synchronous interface" with GET and POST as the only request
+    methods.
+- url: https://transparencyplatform.zendesk.com/hc/en-us
+  type: Documentation
+  note: Current Transparency Platform knowledge base hosting the RESTful API user guide; no WebSocket article exists.
+- url: https://documenter.getpostman.com/view/7009892/2s93JtP3F6
+  type: APIReference
+  note: Official Postman reference; all documented requests are HTTPS GET/POST against /api.
+actions:
+  asyncapiPath: null
+  apisYmlUpdated: true
+  reason: >-
+    No WebSocket, SSE, or other event-driven protocol surface exists to
+    model, so no AsyncAPI document was authored. apis.yml records the REST
+    surface only.

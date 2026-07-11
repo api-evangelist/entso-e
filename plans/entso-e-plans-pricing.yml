@@ -1,0 +1,86 @@
+specification: API Commons Plans
+specificationVersion: '0.1'
+schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/Plans
+provider: ENTSO-E
+providerId: entso-e
+created: '2026-07-11'
+modified: '2026-07-11'
+reconciled: true
+tags:
+- Electricity
+- Energy Markets
+- Day-Ahead Prices
+- Balancing
+- Open Data
+- Plans
+description: >-
+  The ENTSO-E Transparency Platform web API has exactly one plan - free with
+  registration. The platform is a regulatory publication mandated by EU
+  Regulation 543/2013, so the data itself carries no charge and there are no
+  paid tiers, quotas for sale, or commercial upgrades. Access is gated only by
+  an account: register on transparency.entsoe.eu, email transparency@entsoe.eu
+  with "Restful API access" in the subject line (the helpdesk targets a
+  response within 3 working days), then generate a personal security token
+  under My Account Settings. Consumption is bounded by fixed technical limits
+  (400 requests/minute per IP/token, one-year range per standard query,
+  100-200 documents per document-based query) rather than by billing.
+notes: >-
+  The same account also grants access to the ENTSO-E File Library for bulk
+  file downloads at no charge. Tokens can be reset by the user at any time if
+  compromised.
+sources:
+- https://transparency.entsoe.eu/
+- https://transparencyplatform.zendesk.com/hc/en-us
+- https://documenter.getpostman.com/view/7009892/2s93JtP3F6
+plans:
+- id: entso-e-free-registered
+  name: Free (Registered)
+  type: free
+  description: >-
+    Full access to every Transparency Platform data item - day-ahead prices,
+    load, generation, balancing, transmission, outages, and congestion data -
+    after free registration and issuance of a security token. No payment
+    method, contract, or usage fee at any volume; only the platform's fixed
+    technical limits apply.
+  entries:
+  - label: API Requests
+    name: api_requests
+    type: rate
+    metric: requests
+    limit: 400
+    timeFrame: minute
+    geo: global
+    unit: 1
+    price: free (400 requests per minute per IP address / security token)
+    userMultiplied: false
+  - label: Query Range (Standard Data Items)
+    name: query_range
+    type: usage
+    metric: time-range
+    limit: 1
+    timeFrame: request
+    geo: global
+    unit: 1
+    price: free (maximum one year of data per request)
+    userMultiplied: false
+  - label: Documents per Query (Document-Based Items)
+    name: documents_per_query
+    type: usage
+    metric: documents
+    limit: 100
+    timeFrame: request
+    geo: global
+    unit: 1
+    price: free (100 documents per request, 200 for outages, offset paging to 4,900)
+    userMultiplied: false
+  elements:
+  - name: Day-Ahead Prices (A44)
+  - name: Load Actuals and Forecasts (A65)
+  - name: Generation per Type and Unit (A75, A73)
+  - name: Balancing and Imbalance Data (A81-A89)
+  - name: Cross-Border Flows and Capacities (A11, A61)
+  - name: Outage and Congestion Data
+  - name: File Library Bulk Downloads
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com

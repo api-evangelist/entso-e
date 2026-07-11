@@ -1,0 +1,332 @@
+{
+  "info": {
+    "name": "ENTSO-E Transparency Platform RESTful API",
+    "description": "One endpoint (https://web-api.tp.entsoe.eu/api), many data items - selected by documentType, processType, and EIC domain parameters. Every request needs securityToken (free after registration on transparency.entsoe.eu). Responses are IEC 62325 XML market documents; imbalance items return ZIP. periodStart/periodEnd are yyyyMMddHHmm in UTC. Examples use the Czech bidding zone / control area (10YCZ-CEPS-----N) and the SK>CZ border.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "securityToken", "value": "", "description": "Personal Transparency Platform API token." }
+  ],
+  "item": [
+    {
+      "name": "Day-Ahead Prices",
+      "item": [
+        {
+          "name": "Day-ahead prices for a bidding zone [12.1.D]",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "https://web-api.tp.entsoe.eu/api?securityToken={{securityToken}}&documentType=A44&in_Domain=10YCZ-CEPS-----N&out_Domain=10YCZ-CEPS-----N&periodStart=202506302200&periodEnd=202507012200",
+              "protocol": "https",
+              "host": ["web-api", "tp", "entsoe", "eu"],
+              "path": ["api"],
+              "query": [
+                { "key": "securityToken", "value": "{{securityToken}}" },
+                { "key": "documentType", "value": "A44" },
+                { "key": "in_Domain", "value": "10YCZ-CEPS-----N" },
+                { "key": "out_Domain", "value": "10YCZ-CEPS-----N" },
+                { "key": "periodStart", "value": "202506302200" },
+                { "key": "periodEnd", "value": "202507012200" }
+              ]
+            },
+            "description": "Wholesale day-ahead electricity prices per market time unit (currency/MWh) as a Publication_MarketDocument. in_Domain and out_Domain must carry the SAME bidding-zone EIC code. One-year range limit."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Load",
+      "item": [
+        {
+          "name": "Actual total load [6.1.A]",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "https://web-api.tp.entsoe.eu/api?securityToken={{securityToken}}&documentType=A65&processType=A16&outBiddingZone_Domain=10YCZ-CEPS-----N&periodStart=202506302200&periodEnd=202507012200",
+              "protocol": "https",
+              "host": ["web-api", "tp", "entsoe", "eu"],
+              "path": ["api"],
+              "query": [
+                { "key": "securityToken", "value": "{{securityToken}}" },
+                { "key": "documentType", "value": "A65" },
+                { "key": "processType", "value": "A16" },
+                { "key": "outBiddingZone_Domain", "value": "10YCZ-CEPS-----N" },
+                { "key": "periodStart", "value": "202506302200" },
+                { "key": "periodEnd", "value": "202507012200" }
+              ]
+            },
+            "description": "Realised system total load per market time unit as a GL_MarketDocument."
+          }
+        },
+        {
+          "name": "Day-ahead total load forecast [6.1.B]",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "https://web-api.tp.entsoe.eu/api?securityToken={{securityToken}}&documentType=A65&processType=A01&outBiddingZone_Domain=10YCZ-CEPS-----N&periodStart=202506302200&periodEnd=202507012200",
+              "protocol": "https",
+              "host": ["web-api", "tp", "entsoe", "eu"],
+              "path": ["api"],
+              "query": [
+                { "key": "securityToken", "value": "{{securityToken}}" },
+                { "key": "documentType", "value": "A65" },
+                { "key": "processType", "value": "A01" },
+                { "key": "outBiddingZone_Domain", "value": "10YCZ-CEPS-----N" },
+                { "key": "periodStart", "value": "202506302200" },
+                { "key": "periodEnd", "value": "202507012200" }
+              ]
+            },
+            "description": "Day-ahead load forecast; week/month/year-ahead forecasts use processType A31/A32/A33."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Generation",
+      "item": [
+        {
+          "name": "Actual generation per production type [16.1.B&C]",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "https://web-api.tp.entsoe.eu/api?securityToken={{securityToken}}&documentType=A75&processType=A16&in_Domain=10YCZ-CEPS-----N&periodStart=202506302200&periodEnd=202507012200",
+              "protocol": "https",
+              "host": ["web-api", "tp", "entsoe", "eu"],
+              "path": ["api"],
+              "query": [
+                { "key": "securityToken", "value": "{{securityToken}}" },
+                { "key": "documentType", "value": "A75" },
+                { "key": "processType", "value": "A16" },
+                { "key": "in_Domain", "value": "10YCZ-CEPS-----N" },
+                { "key": "periodStart", "value": "202506302200" },
+                { "key": "periodEnd", "value": "202507012200" }
+              ]
+            },
+            "description": "Realised generation aggregated by production type. Add psrType (e.g. B16 solar, B19 wind onshore) to filter to one type."
+          }
+        },
+        {
+          "name": "Installed generation capacity per type [14.1.A]",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "https://web-api.tp.entsoe.eu/api?securityToken={{securityToken}}&documentType=A68&processType=A33&in_Domain=10YCZ-CEPS-----N&periodStart=202412312300&periodEnd=202512312300",
+              "protocol": "https",
+              "host": ["web-api", "tp", "entsoe", "eu"],
+              "path": ["api"],
+              "query": [
+                { "key": "securityToken", "value": "{{securityToken}}" },
+                { "key": "documentType", "value": "A68" },
+                { "key": "processType", "value": "A33" },
+                { "key": "in_Domain", "value": "10YCZ-CEPS-----N" },
+                { "key": "periodStart", "value": "202412312300" },
+                { "key": "periodEnd", "value": "202512312300" }
+              ]
+            },
+            "description": "Year-ahead installed capacity aggregated per production type."
+          }
+        },
+        {
+          "name": "Wind and solar day-ahead forecast [14.1.D]",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "https://web-api.tp.entsoe.eu/api?securityToken={{securityToken}}&documentType=A69&processType=A01&in_Domain=10YCZ-CEPS-----N&periodStart=202506302200&periodEnd=202507012200",
+              "protocol": "https",
+              "host": ["web-api", "tp", "entsoe", "eu"],
+              "path": ["api"],
+              "query": [
+                { "key": "securityToken", "value": "{{securityToken}}" },
+                { "key": "documentType", "value": "A69" },
+                { "key": "processType", "value": "A01" },
+                { "key": "in_Domain", "value": "10YCZ-CEPS-----N" },
+                { "key": "periodStart", "value": "202506302200" },
+                { "key": "periodEnd", "value": "202507012200" }
+              ]
+            },
+            "description": "Day-ahead generation forecast for wind and solar; processType A40 gives the intraday process."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Balancing",
+      "item": [
+        {
+          "name": "Imbalance prices [17.1.G]",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "https://web-api.tp.entsoe.eu/api?securityToken={{securityToken}}&documentType=A85&controlArea_Domain=10YCZ-CEPS-----N&periodStart=202506302200&periodEnd=202507012200",
+              "protocol": "https",
+              "host": ["web-api", "tp", "entsoe", "eu"],
+              "path": ["api"],
+              "query": [
+                { "key": "securityToken", "value": "{{securityToken}}" },
+                { "key": "documentType", "value": "A85" },
+                { "key": "controlArea_Domain", "value": "10YCZ-CEPS-----N" },
+                { "key": "periodStart", "value": "202506302200" },
+                { "key": "periodEnd", "value": "202507012200" }
+              ]
+            },
+            "description": "Imbalance settlement prices per balancing time unit. Response is a ZIP archive containing Balancing_MarketDocument XML."
+          }
+        },
+        {
+          "name": "Total imbalance volumes [17.1.H]",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "https://web-api.tp.entsoe.eu/api?securityToken={{securityToken}}&documentType=A86&controlArea_Domain=10YCZ-CEPS-----N&periodStart=202506302200&periodEnd=202507012200",
+              "protocol": "https",
+              "host": ["web-api", "tp", "entsoe", "eu"],
+              "path": ["api"],
+              "query": [
+                { "key": "securityToken", "value": "{{securityToken}}" },
+                { "key": "documentType", "value": "A86" },
+                { "key": "controlArea_Domain", "value": "10YCZ-CEPS-----N" },
+                { "key": "periodStart", "value": "202506302200" },
+                { "key": "periodEnd", "value": "202507012200" }
+              ]
+            },
+            "description": "Total imbalance volumes per balancing time unit for a control area (ZIP of XML)."
+          }
+        },
+        {
+          "name": "Activated balancing energy [17.1.E]",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "https://web-api.tp.entsoe.eu/api?securityToken={{securityToken}}&documentType=A83&businessType=A96&controlArea_Domain=10YCZ-CEPS-----N&periodStart=202506302200&periodEnd=202507012200",
+              "protocol": "https",
+              "host": ["web-api", "tp", "entsoe", "eu"],
+              "path": ["api"],
+              "query": [
+                { "key": "securityToken", "value": "{{securityToken}}" },
+                { "key": "documentType", "value": "A83" },
+                { "key": "businessType", "value": "A96" },
+                { "key": "controlArea_Domain", "value": "10YCZ-CEPS-----N" },
+                { "key": "periodStart", "value": "202506302200" },
+                { "key": "periodEnd", "value": "202507012200" }
+              ]
+            },
+            "description": "Activated balancing energy per reserve type; businessType A96 = automatic frequency restoration reserve."
+          }
+        },
+        {
+          "name": "Accepted aggregated offers [17.1.D]",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "https://web-api.tp.entsoe.eu/api?securityToken={{securityToken}}&documentType=A82&businessType=A95&controlArea_Domain=10YCZ-CEPS-----N&periodStart=202506302200&periodEnd=202507012200",
+              "protocol": "https",
+              "host": ["web-api", "tp", "entsoe", "eu"],
+              "path": ["api"],
+              "query": [
+                { "key": "securityToken", "value": "{{securityToken}}" },
+                { "key": "documentType", "value": "A82" },
+                { "key": "businessType", "value": "A95" },
+                { "key": "controlArea_Domain", "value": "10YCZ-CEPS-----N" },
+                { "key": "periodStart", "value": "202506302200" },
+                { "key": "periodEnd", "value": "202507012200" }
+              ]
+            },
+            "description": "Accepted offers of activated balancing reserves; businessType A95 = frequency containment reserve."
+          }
+        },
+        {
+          "name": "Volumes of contracted balancing reserves [17.1.B]",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "https://web-api.tp.entsoe.eu/api?securityToken={{securityToken}}&documentType=A81&type_MarketAgreement.Type=A13&businessType=A95&controlArea_Domain=10YCZ-CEPS-----N&periodStart=202506302200&periodEnd=202507012200",
+              "protocol": "https",
+              "host": ["web-api", "tp", "entsoe", "eu"],
+              "path": ["api"],
+              "query": [
+                { "key": "securityToken", "value": "{{securityToken}}" },
+                { "key": "documentType", "value": "A81" },
+                { "key": "type_MarketAgreement.Type", "value": "A13" },
+                { "key": "businessType", "value": "A95" },
+                { "key": "controlArea_Domain", "value": "10YCZ-CEPS-----N" },
+                { "key": "periodStart", "value": "202506302200" },
+                { "key": "periodEnd", "value": "202507012200" }
+              ]
+            },
+            "description": "Contracted balancing reserves; type_MarketAgreement.Type A13 = hourly contracts. 100-document limit with offset paging."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Transmission",
+      "item": [
+        {
+          "name": "Cross-border physical flows [12.1.G]",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "https://web-api.tp.entsoe.eu/api?securityToken={{securityToken}}&documentType=A11&in_Domain=10YCZ-CEPS-----N&out_Domain=10YSK-SEPS-----K&periodStart=202506302200&periodEnd=202507012200",
+              "protocol": "https",
+              "host": ["web-api", "tp", "entsoe", "eu"],
+              "path": ["api"],
+              "query": [
+                { "key": "securityToken", "value": "{{securityToken}}" },
+                { "key": "documentType", "value": "A11" },
+                { "key": "in_Domain", "value": "10YCZ-CEPS-----N" },
+                { "key": "out_Domain", "value": "10YSK-SEPS-----K" },
+                { "key": "periodStart", "value": "202506302200" },
+                { "key": "periodEnd", "value": "202507012200" }
+              ]
+            },
+            "description": "Physical flows on the SK>CZ border. One direction per request - swap in_Domain and out_Domain for the reverse direction."
+          }
+        },
+        {
+          "name": "Forecasted transfer capacities day-ahead [11.1.A]",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "https://web-api.tp.entsoe.eu/api?securityToken={{securityToken}}&documentType=A61&contract_MarketAgreement.Type=A01&in_Domain=10YCZ-CEPS-----N&out_Domain=10YSK-SEPS-----K&periodStart=202506302200&periodEnd=202507012200",
+              "protocol": "https",
+              "host": ["web-api", "tp", "entsoe", "eu"],
+              "path": ["api"],
+              "query": [
+                { "key": "securityToken", "value": "{{securityToken}}" },
+                { "key": "documentType", "value": "A61" },
+                { "key": "contract_MarketAgreement.Type", "value": "A01" },
+                { "key": "in_Domain", "value": "10YCZ-CEPS-----N" },
+                { "key": "out_Domain", "value": "10YSK-SEPS-----K" },
+                { "key": "periodStart", "value": "202506302200" },
+                { "key": "periodEnd", "value": "202507012200" }
+              ]
+            },
+            "description": "Estimated net transfer capacity; contract_MarketAgreement.Type A01 daily, A02 weekly, A03 monthly, A04 yearly."
+          }
+        },
+        {
+          "name": "Day-ahead commercial schedules [12.1.F]",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "https://web-api.tp.entsoe.eu/api?securityToken={{securityToken}}&documentType=A09&contract_MarketAgreement.Type=A01&in_Domain=10YCZ-CEPS-----N&out_Domain=10YSK-SEPS-----K&periodStart=202506302200&periodEnd=202507012200",
+              "protocol": "https",
+              "host": ["web-api", "tp", "entsoe", "eu"],
+              "path": ["api"],
+              "query": [
+                { "key": "securityToken", "value": "{{securityToken}}" },
+                { "key": "documentType", "value": "A09" },
+                { "key": "contract_MarketAgreement.Type", "value": "A01" },
+                { "key": "in_Domain", "value": "10YCZ-CEPS-----N" },
+                { "key": "out_Domain", "value": "10YSK-SEPS-----K" },
+                { "key": "periodStart", "value": "202506302200" },
+                { "key": "periodEnd", "value": "202507012200" }
+              ]
+            },
+            "description": "Scheduled commercial exchanges between two areas as a Publication_MarketDocument."
+          }
+        }
+      ]
+    }
+  ]
+}

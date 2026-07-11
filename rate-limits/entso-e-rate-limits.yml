@@ -1,0 +1,96 @@
+specification: API Commons Rate Limits
+specificationVersion: '0.1'
+schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/RateLimits
+provider: ENTSO-E
+providerId: entso-e
+created: '2026-07-11'
+modified: '2026-07-11'
+reconciled: true
+tags:
+- Electricity
+- Energy Markets
+- Day-Ahead Prices
+- Balancing
+- Rate Limiting
+- Quotas
+description: >-
+  The ENTSO-E Transparency Platform publishes explicit, numeric limits in its
+  RESTful API user guide. Request rate is capped at 400 requests per minute,
+  counted per IP address AND per security token; crossing the cap earns a
+  temporary 10-minute ban, during which requests receive HTTP 429 with the
+  message "Max allowed requests per minute from each unique IP is max up to
+  400 only". Independent of rate, each query is bounded in size - standard
+  (table) data items such as day-ahead prices, load, and generation allow at
+  most a one-year range per request, while document-based (curve) items such
+  as outages and capacity allocations return at most 100 documents per
+  request (200 for outages), with an offset parameter (0-4800) on some items
+  allowing paging up to 4,900 documents. Over-limit queries are rejected with
+  an Acknowledgement_MarketDocument explaining the reason.
+notes: >-
+  When a query is rejected for exceeding limits, the guide recommends
+  splitting the time interval into smaller consecutive windows or adding
+  optional selection criteria (psrType, businessType). Empty results are also
+  delivered as an Acknowledgement_MarketDocument with Reason code 999 "No
+  matching data found" - treat it as no-data, not as an error to retry.
+sources:
+- https://transparency.entsoe.eu/content/static_content/Static%20content/web%20api/Guide.html
+- https://transparencyplatform.zendesk.com/hc/en-us
+responseCodes:
+  throttled: 429
+limits:
+- name: API Request Rate
+  scope: ip-address-and-token
+  metric: requests
+  limit: 400 per minute
+  notes: >-
+    Counted per unique IP address and per security token. Exceeding the cap
+    results in a temporary ban of 10 minutes; banned requests receive HTTP
+    429 Too Many Requests.
+- name: Standard Data Item Query Range
+  scope: request
+  metric: time-range
+  limit: one year
+  notes: >-
+    Applies to table-style data items (day-ahead prices A44, load A65,
+    generation A75, balancing A82-A86, flows A11, and most others). Longer
+    ranges are rejected with an Acknowledgement_MarketDocument.
+- name: Document-Based Query Size
+  scope: request
+  metric: documents
+  limit: 100
+  notes: >-
+    Curve-type data items (capacity allocations, contracted reserves,
+    procured balancing capacity) return at most 100 published documents per
+    request; one platform table row corresponds to one document.
+- name: Outage Query Size
+  scope: request
+  metric: documents
+  limit: 200
+  notes: The document limit is raised to 200 per request for outage (unavailability) data items.
+- name: Offset Paging
+  scope: request
+  metric: documents
+  limit: offset 0-4800 (max 4,900 documents per query)
+  notes: >-
+    Items that support the offset parameter page in steps of the document
+    limit; offset=n returns documents n+1 onward, restricted so a query can
+    reach at most 4,900 documents.
+policies:
+- name: Temporary Ban
+  description: >-
+    Exceeding 400 requests/minute triggers a 10-minute ban keyed to the IP
+    address / security token, served as HTTP 429.
+- name: Rejection as Acknowledgement Document
+  description: >-
+    Requests over the range or document limits, with missing/duplicate
+    parameters, or matching no data are answered with an IEC 62325
+    Acknowledgement_MarketDocument carrying a Reason code (999 = no matching
+    data found) rather than a JSON error.
+- name: Backoff Strategy
+  description: >-
+    Clients should self-throttle below 400 requests/minute, wait out the full
+    10-minute ban on 429 (retrying during the ban extends nothing), and split
+    large historical pulls into one-year (or smaller) consecutive windows.
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com
