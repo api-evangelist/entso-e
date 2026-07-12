@@ -166,6 +166,10 @@ apis:
     commercial schedules (A09), offered and allocated capacity, and net
     positions - keyed by in_Domain/out_Domain EIC border pairs.
 common:
+- type: DomainSecurity
+  url: security/entso-e-domain-security.yml
+- type: Authentication
+  url: authentication/entso-e-authentication.yml
 - type: LinkedIn
   url: https://www.linkedin.com/company/entso-e
 - type: Website

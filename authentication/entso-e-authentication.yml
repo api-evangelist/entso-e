@@ -1,0 +1,17 @@
+generated: '2026-07-11'
+method: derived
+source: openapi/entso-e-openapi.yml
+summary:
+  types:
+  - apiKey
+  api_key_in:
+  - query
+schemes:
+- name: securityToken
+  type: apiKey
+  in: query
+  parameter: securityToken
+  description: Free personal token issued after registering on the Transparency Platform and
+    requesting Restful API access from transparency@entsoe.eu.
+  sources:
+  - openapi/entso-e-openapi.yml
