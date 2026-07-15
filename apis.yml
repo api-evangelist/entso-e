@@ -166,6 +166,8 @@ apis:
     commercial schedules (A09), offered and allocated capacity, and net
     positions - keyed by in_Domain/out_Domain EIC border pairs.
 common:
+- type: AgenticAccess
+  url: agentic-access/entso-e-agentic-access.yml
 - type: DomainSecurity
   url: security/entso-e-domain-security.yml
 - type: Authentication
