@@ -1,0 +1,14 @@
+{
+  "provider": "entso-e",
+  "sources": [
+    "entso-e-market-data-query-api-openapi.yml"
+  ],
+  "outputs": [
+    "entso-e-market-data-query-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [],
+  "skipped": []
+}
