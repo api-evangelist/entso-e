@@ -1,0 +1,58 @@
+{
+  "@context": "https://schema.org",
+  "@type": "WebAPI",
+  "name": "ENTSO-E Transparency Platform REST API",
+  "description": "Synchronous RESTful interface for accessing pan-European electricity market data including load forecasts, actual generation per type and per plant, installed generation capacity, day-ahead prices, cross-border flows, scheduled exchanges, transfer capacities, balancing data, hydro storage, outage information, and congestion management data. Authentication requires a security token.",
+  "url": "https://transparency.entsoe.eu/",
+  "termsOfService": "https://transparency.entsoe.eu/content/static_content/Static%20content/web%20api/Guide.html",
+  "documentation": "https://transparency.entsoe.eu/content/static_content/Static%20content/web%20api/Guide.html",
+  "provider": {
+    "@type": "Organization",
+    "name": "ENTSO-E",
+    "url": "https://www.entsoe.eu/"
+  },
+  "license": "https://transparency.entsoe.eu/",
+  "version": "1.0",
+  "availableChannel": {
+    "@type": "ServiceChannel",
+    "serviceUrl": "https://web-api.tp.entsoe.eu/api",
+    "serviceType": "REST API"
+  },
+  "potentialAction": [
+    {
+      "@type": "SearchAction",
+      "target": "https://web-api.tp.entsoe.eu/api?securityToken={token}&documentType={documentType}&in_Domain={in_Domain}&out_Domain={out_Domain}&periodStart={periodStart}&periodEnd={periodEnd}",
+      "description": "Query electricity market data by document type, domain, and time period"
+    }
+  ],
+  "applicationCategory": "Energy Data API",
+  "featureList": [
+    "Load Forecasts (Day-Ahead, Week-Ahead, Month-Ahead, Year-Ahead)",
+    "Actual Total Load",
+    "Actual Generation Per Type",
+    "Actual Generation Per Production Unit",
+    "Installed Generation Capacity",
+    "Day-Ahead Prices",
+    "Cross-Border Physical Flows",
+    "Scheduled Commercial Exchanges",
+    "Net Transfer Capacities",
+    "Balancing Market Data",
+    "Hydro Water Reservoirs",
+    "Transmission System Outages",
+    "Congestion Management Measures"
+  ],
+  "encodingFormat": [
+    "application/xml",
+    "application/zip"
+  ],
+  "audience": {
+    "@type": "Audience",
+    "audienceType": "Energy Market Participants, Researchers, Regulators, TSOs"
+  },
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "EUR",
+    "description": "Free access with registration. Registration required at transparency.entsoe.eu; email transparency@entsoe.eu with subject 'Restful API access'."
+  }
+}

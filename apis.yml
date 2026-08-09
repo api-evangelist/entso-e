@@ -2,14 +2,11 @@ aid: entso-e
 url: https://raw.githubusercontent.com/api-evangelist/entso-e/refs/heads/main/apis.yml
 name: ENTSO-E
 kind: organization
-description: >-
-  ENTSO-E, the European Network of Transmission System Operators for
-  Electricity, operates the Transparency Platform - the central publication
-  point for pan-European electricity market data under EU Regulation 543/2013.
-  Its free RESTful API returns day-ahead prices, system load, generation,
-  balancing, and cross-border transmission data for every European bidding
-  zone and control area as IEC 62325 XML market documents, selected by coded
-  documentType and processType parameters against a single endpoint.
+description: ENTSO-E, the European Network of Transmission System Operators for Electricity, operates
+  the Transparency Platform - the central publication point for pan-European electricity market data under
+  EU Regulation 543/2013. Its free RESTful API returns day-ahead prices, system load, generation, balancing,
+  and cross-border transmission data for every European bidding zone and control area as IEC 62325 XML
+  market documents, selected by coded documentType and processType parameters against a single endpoint.
 accessModel:
   pricing: freemium
   onboarding: self-serve
@@ -34,14 +31,13 @@ tags:
 - Grid Data
 - Europe
 created: '2026-07-11'
-modified: '2026-07-11'
+modified: '2026-08-08'
 specificationVersion: '0.19'
 apis:
 - aid: entso-e:entso-e-market-data-query-api
   name: ENTSO-E Market Data Query API
-  description: >-
-    Single query endpoint for every Transparency Platform data item. The documentType, processType, and
-    domain parameters select the dataset.
+  description: Single query endpoint for every Transparency Platform data item. The documentType, processType,
+    and domain parameters select the dataset.
   humanURL: https://documenter.getpostman.com/view/7009892/2s93JtP3F6
   baseURL: https://web-api.tp.entsoe.eu/api
   tags:
@@ -80,6 +76,26 @@ common:
   url: finops/entso-e-finops.yml
 - type: Blog
   url: https://www.entsoe.eu/news/
+- type: TransparencyPlatform
+  url: https://transparency.entsoe.eu/
+- type: KnowledgeBase
+  url: https://transparencyplatform.zendesk.com/hc/en-us
+- type: GitHubOrganization
+  url: https://github.com/EnergieID/entsoe-py
+- type: PostmanDocumentation
+  url: https://documenter.getpostman.com/view/7009892/2s93JtP3F6
+- type: Registration
+  url: https://transparency.entsoe.eu/usrm/user/createPublicUser
+- type: Contact
+  url: https://www.entsoe.eu/contact/
+- type: About
+  url: https://www.entsoe.eu/about/
+- type: TermsOfService
+  url: https://transparency.entsoe.eu/content/static_content/Static%20content/web%20api/Guide.html
+- type: Email
+  url: mailto:transparency@entsoe.eu
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
+x-merged-from:
+- entsoe

@@ -1,0 +1,33 @@
+plans:
+  - name: Free
+    description: >-
+      The ENTSO-E Transparency Platform REST API is provided free of charge as
+      a public, EU-mandated service. All users must register on the Transparency
+      Platform and request API access by emailing transparency@entsoe.eu with
+      the subject "Restful API access". Access is granted within approximately
+      3 working days. There are no commercial tiers or paid plans — the service
+      is funded by ENTSO-E member organisations in accordance with EU Regulation
+      No 543/2013.
+    url: https://transparency.entsoe.eu/usrm/user/createPublicUser
+    price: 0.00
+    currency: EUR
+    unit: month
+    features:
+      - description: Full access to all Transparency Platform datasets
+      - description: Load data — actual and forecast
+      - description: Generation data per type and per plant
+      - description: Installed generation capacity
+      - description: Day-ahead electricity prices
+      - description: Cross-border flows and scheduled exchanges
+      - description: Transfer capacities (day-ahead, week-ahead, month-ahead, year-ahead)
+      - description: Balancing data — procured capacity and activated energy
+      - description: Hydro storage and water reservoir data
+      - description: Unavailability of generation units and transmission
+      - description: Congestion management and system operations data
+      - description: Historical data from 2011 onwards
+      - description: XML response format
+      - description: ZIP format for bulk datasets
+    rateLimit:
+      requests: 400
+      period: minute
+      ban: 10 minute temporary ban after exceeding limit

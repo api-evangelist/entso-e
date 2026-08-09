@@ -1,0 +1,28 @@
+rateLimits:
+  - name: Standard Request Rate Limit
+    description: >-
+      The ENTSO-E Transparency Platform API enforces a maximum of 400 requests
+      per minute per user, counted on a per-IP-address and per-security-token
+      basis. Exceeding this limit results in a temporary 10-minute ban. This
+      limit applies to all data types and endpoints on the API.
+    requests: 400
+    period: minute
+    scope: per IP address and per security token
+    enforcement:
+      - trigger: Exceeding 400 requests per minute
+        consequence: Temporary 10-minute ban
+        httpStatus: 429
+  - name: Authentication Failure
+    description: >-
+      Requests with a missing or invalid security token receive an HTTP 401
+      Unauthorized response. The security token must be included in every
+      request as a query parameter named "securityToken" or as a Bearer token
+      in the Authorization header.
+    httpStatus: 401
+    trigger: Missing or invalid securityToken parameter
+notes:
+  - The API is synchronous; each request waits for a complete response.
+  - For large datasets or long time periods, the API may return ZIP files containing XML.
+  - Rate limits are enforced per IP address as well as per token, so shared infrastructure
+    can aggregate request counts.
+  - There is no documented quota on total monthly requests; only the per-minute rate applies.

@@ -1,0 +1,31 @@
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "ENTSO-E",
+  "legalName": "European Network of Transmission System Operators for Electricity",
+  "url": "https://www.entsoe.eu/",
+  "logo": "https://www.entsoe.eu/assets/images/entsoe-logo.png",
+  "description": "ENTSO-E is the association of European electricity transmission system operators, coordinating the pan-European power grid and providing standardised electricity market data through the Transparency Platform.",
+  "email": "transparency@entsoe.eu",
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "email": "transparency@entsoe.eu",
+    "contactType": "technical support",
+    "availableLanguage": "English"
+  },
+  "sameAs": [
+    "https://transparency.entsoe.eu/",
+    "https://github.com/EnergieID/entsoe-py"
+  ],
+  "foundingDate": "2009",
+  "areaServed": "Europe",
+  "knowsAbout": [
+    "Electricity Transmission",
+    "Energy Market Data",
+    "Power Grid Operations",
+    "Day-Ahead Prices",
+    "Cross-Border Flows",
+    "Load Forecasting",
+    "Generation Data"
+  ]
+}

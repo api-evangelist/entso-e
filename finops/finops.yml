@@ -1,0 +1,41 @@
+finops:
+  model: Free Public API
+  description: >-
+    The ENTSO-E Transparency Platform REST API is a free, publicly funded
+    service provided under EU Regulation No 543/2013 on the submission and
+    publication of data in electricity markets. There are no costs, subscription
+    fees, or metered charges for API access. The service is financed by ENTSO-E
+    member organisations (European Transmission System Operators).
+  costs:
+    - name: API Access
+      amount: 0.00
+      currency: EUR
+      unit: request
+      description: All API requests are free of charge.
+    - name: Registration
+      amount: 0.00
+      currency: EUR
+      unit: one-time
+      description: >-
+        Account registration on the Transparency Platform and API access
+        request are both free. Access is granted within approximately 3
+        working days of emailing transparency@entsoe.eu.
+  budgetControls:
+    - description: >-
+        No billing or budget controls are available as the service is entirely
+        free. The only limit is the technical rate limit of 400 requests per
+        minute per user.
+  considerations:
+    - description: >-
+        Although the API itself is free, integrators should account for
+        infrastructure costs (servers, data storage) when processing and
+        caching the XML/ZIP responses, particularly for bulk or historical
+        queries.
+    - description: >-
+        Organizations building commercial products on top of ENTSO-E data
+        should review the platform's terms of use and the applicable EU
+        regulations governing data redistribution.
+    - description: >-
+        The 10-minute ban for exceeding 400 requests/minute may have
+        operational cost implications in production pipelines; implement
+        back-off and caching strategies to avoid disruption.
