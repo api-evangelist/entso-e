@@ -32,7 +32,7 @@ tags:
 - Europe
 created: '2026-07-11'
 modified: '2026-08-08'
-specificationVersion: '0.19'
+specificationVersion: '0.23'
 apis:
 - aid: entso-e:entso-e-market-data-query-api
   name: ENTSO-E Market Data Query API
