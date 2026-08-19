@@ -1,0 +1,236 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "ENTSO-E Transparency Platform RESTful Market Data Query API",
+    "version": "1.0"
+  },
+  "request": {
+    "auth": {
+      "type": "apikey",
+      "key": "securityToken",
+      "value": "{{securityToken}}",
+      "placement": "query"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Market Data Query",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Query Transparency Platform data (GET)",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://web-api.tp.entsoe.eu/api",
+            "params": [
+              {
+                "name": "securityToken",
+                "value": "",
+                "type": "query",
+                "description": "Personal API token. Free - register on the Transparency Platform, email transparency@entsoe.eu with subject \"Restful API access\", then generate the token under My Account Settings. Missing or invalid tokens receive HTTP 401."
+              },
+              {
+                "name": "documentType",
+                "value": "A44",
+                "type": "query",
+                "description": "Coded document type selecting the data item family. Key codes: A44 price document (day-ahead prices), A65 system total load, A75 actual generation per type, A73 actual generation (per unit), A74 wind and solar generation, A71 generation forecast, A69 wind and solar forecast, A68 installed generation per type, A72 reservoir filling information, A70 load forecast margin, A11 aggregated energy data report (physical flows), A61 estimated net transfer capacity, A09 finalised schedule (commercial exchanges), A31 agreed capacity, A25 allocation result document, A26 capacity document, A81 contracted reserves, A82 accepted offers, A83 activated balancing quantities, A84 activated balancing prices, A85 imbalance prices, A86 imbalance volume, A87 financial situation, A88 cross border balancing, A89 contracted reserve prices, A15 acquiring system operator reserve schedule (procured balancing capacity), A76-A80 unavailability (outage) documents."
+              },
+              {
+                "name": "processType",
+                "value": "A16",
+                "type": "query",
+                "description": "Process the data belongs to. A01 day ahead, A02 intra day incremental, A16 realised, A18 intraday total, A31 week ahead, A32 month ahead, A33 year ahead, A39 synchronisation process, A40 intraday process, A46 replacement reserve, A47 manual frequency restoration reserve, A51 automatic frequency restoration reserve, A52 frequency containment reserve, A56 frequency restoration reserve, A60 scheduled activation mFRR, A61 direct activation mFRR, A67 central selection aFRR, A68 local selection aFRR."
+              },
+              {
+                "name": "businessType",
+                "value": "A96",
+                "type": "query",
+                "description": "Business type filter used mainly by balancing and outage items, e.g. A95 frequency containment reserve, A96 automatic frequency restoration reserve, A97 manual frequency restoration reserve, A98 replacement reserve, A53 planned maintenance, A54 unplanned outage, A19 balance energy deviation."
+              },
+              {
+                "name": "psrType",
+                "value": "B16",
+                "type": "query",
+                "description": "Power system resource (production) type filter. B01 biomass, B02 fossil brown coal/lignite, B04 fossil gas, B05 fossil hard coal, B09 geothermal, B10 hydro pumped storage, B11 hydro run-of-river, B12 hydro water reservoir, B14 nuclear, B16 solar, B17 waste, B18 wind offshore, B19 wind onshore, B20 other, plus A03 mixed, A04 generation, A05 load."
+              },
+              {
+                "name": "in_Domain",
+                "value": "10YCZ-CEPS-----N",
+                "type": "query",
+                "description": "EIC code of the in area (bidding zone, control area, or border end). For day-ahead prices (A44) in_Domain and out_Domain must be the same bidding-zone EIC code, e.g. 10YCZ-CEPS-----N."
+              },
+              {
+                "name": "out_Domain",
+                "value": "10YSK-SEPS-----K",
+                "type": "query",
+                "description": "EIC code of the out area. For border data items (physical flows, transfer capacities, schedules) the API returns one direction per request; swap in_Domain and out_Domain for the other direction."
+              },
+              {
+                "name": "outBiddingZone_Domain",
+                "value": "10YCZ-CEPS-----N",
+                "type": "query",
+                "description": "EIC code of the bidding zone for load data items (documentType A65, A70)."
+              },
+              {
+                "name": "biddingZone_Domain",
+                "value": "",
+                "type": "query",
+                "description": "EIC code of the bidding zone, used by outage and some generation items."
+              },
+              {
+                "name": "controlArea_Domain",
+                "value": "10YCZ-CEPS-----N",
+                "type": "query",
+                "description": "EIC code of the control / market balance area for balancing data items (documentType A81-A89)."
+              },
+              {
+                "name": "area_Domain",
+                "value": "",
+                "type": "query",
+                "description": "EIC code of the scheduling area, used by procured balancing capacity (A15)."
+              },
+              {
+                "name": "acquiring_Domain",
+                "value": "",
+                "type": "query",
+                "description": "EIC code of the acquiring area for cross-border balancing (A88)."
+              },
+              {
+                "name": "connecting_Domain",
+                "value": "",
+                "type": "query",
+                "description": "EIC code of the connecting area for cross-border balancing (A88)."
+              },
+              {
+                "name": "periodStart",
+                "value": "202506302200",
+                "type": "query",
+                "description": "Start of the query window in yyyyMMddHHmm format, interpreted as UTC (e.g. 201512312300). Use together with periodEnd; cannot be combined with timeInterval."
+              },
+              {
+                "name": "periodEnd",
+                "value": "202507012200",
+                "type": "query",
+                "description": "End of the query window in yyyyMMddHHmm format, interpreted as UTC. Use together with periodStart; cannot be combined with timeInterval."
+              },
+              {
+                "name": "timeInterval",
+                "value": "",
+                "type": "query",
+                "description": "ISO 8601 interval alternative to periodStart/periodEnd, e.g. 2015-12-31T23:00Z/2016-12-31T23:00Z. Cannot be combined with periodStart/periodEnd."
+              },
+              {
+                "name": "contract_MarketAgreement.Type",
+                "value": "A01",
+                "type": "query",
+                "description": "Contract type for capacity allocation items (A61, A31, A09 and others). A01 daily, A02 weekly, A03 monthly, A04 yearly, A05 total, A06 long term, A07 intraday."
+              },
+              {
+                "name": "type_MarketAgreement.Type",
+                "value": "",
+                "type": "query",
+                "description": "Contract type for balancing reserve items (A81, A89). A01 daily, A02 weekly, A03 monthly, A04 yearly, A06 long term, A13 hourly."
+              },
+              {
+                "name": "auction.Type",
+                "value": "",
+                "type": "query",
+                "description": "Auction type for capacity allocation items. A01 implicit, A02 explicit."
+              },
+              {
+                "name": "auction.Category",
+                "value": "",
+                "type": "query",
+                "description": "Auction category. A01 base, A02 peak, A03 off peak, A04 hourly."
+              },
+              {
+                "name": "classificationSequence_AttributeInstanceComponent.Position",
+                "value": "",
+                "type": "query",
+                "description": "Classification sequence position for explicit allocation results."
+              },
+              {
+                "name": "registeredResource",
+                "value": "",
+                "type": "query",
+                "description": "EIC code of a specific generation unit or transmission asset."
+              },
+              {
+                "name": "docStatus",
+                "value": "",
+                "type": "query",
+                "description": "Document status filter, mainly for outages. A01 intermediate, A02 final, A05 active, A09 cancelled, A13 withdrawn, X01 estimated."
+              },
+              {
+                "name": "standard_MarketProduct",
+                "value": "",
+                "type": "query",
+                "description": "Standard market product filter for balancing energy items (A01 standard, A02 specific, A03 integrated process, A04 local)."
+              },
+              {
+                "name": "original_MarketProduct",
+                "value": "",
+                "type": "query",
+                "description": "Original market product filter for balancing energy items."
+              },
+              {
+                "name": "direction",
+                "value": "",
+                "type": "query",
+                "description": "Flow direction filter for balancing items. A01 up, A02 down, A03 symmetric."
+              },
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query",
+                "description": "Paging offset for document-limited items (outages, procured balancing capacity, contracted reserves). Range 0-4800; offset=n returns documents n+1 through n+100 (n+200 for outages), so at most 4,900 documents are reachable per query."
+              },
+              {
+                "name": "periodStartUpdate",
+                "value": "",
+                "type": "query",
+                "description": "Start of the publication/update window (yyyyMMddHHmm) for outage items; cannot be combined with timeIntervalUpdate."
+              },
+              {
+                "name": "periodEndUpdate",
+                "value": "",
+                "type": "query",
+                "description": "End of the publication/update window (yyyyMMddHHmm) for outage items; cannot be combined with timeIntervalUpdate."
+              },
+              {
+                "name": "timeIntervalUpdate",
+                "value": "",
+                "type": "query",
+                "description": "ISO 8601 publication/update interval for outage items; cannot be combined with periodStartUpdate/periodEndUpdate."
+              }
+            ]
+          },
+          "docs": "Retrieves one Transparency Platform data item as an IEC 62325 XML market document (or ZIP of XML for imbalance and outage items). The combination of documentType, processType, businessType, and domain parameters selects the data item; periodStart/periodEnd (or timeInterval) bound the query window. Parameter names are case-sensitive and must start lowercase on GET. Standard (table) data items are limited to a one-year range per request; document-based (curve) items are limited to 100 documents pe"
+        },
+        {
+          "info": {
+            "name": "Query Transparency Platform data (POST)",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://web-api.tp.entsoe.eu/api",
+            "headers": [
+              {
+                "name": "SECURITY_TOKEN",
+                "value": ""
+              }
+            ]
+          },
+          "docs": "Same query capability as GET, expressed as an IEC 62325-451-5 StatusRequest_MarketDocument XML body in which each query parameter is an AttributeInstanceComponent (attribute/attributeValue pair, with parameter names capitalized, e.g. DocumentType, In_Domain, TimeInterval). The security token is passed in the SECURITY_TOKEN request header instead of the query string."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}
