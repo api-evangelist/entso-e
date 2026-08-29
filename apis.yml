@@ -7,6 +7,18 @@ description: ENTSO-E, the European Network of Transmission System Operators for 
   EU Regulation 543/2013. Its free RESTful API returns day-ahead prices, system load, generation, balancing,
   and cross-border transmission data for every European bidding zone and control area as IEC 62325 XML
   market documents, selected by coded documentType and processType parameters against a single endpoint.
+deliveryModel:
+  model: saas
+  open_source: false
+  commercial: true
+  callable_host: true
+  label: Hosted service · you call their endpoint
+  confidence: high
+  source:
+  - openapi
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 accessModel:
   pricing: freemium
   onboarding: self-serve
