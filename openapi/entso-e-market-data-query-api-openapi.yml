@@ -1,34 +1,7 @@
-openapi: 3.0.3
+openapi: 3.2.0
 info:
   title: ENTSO-E Transparency Platform RESTful Market Data Query API
-  description: 'The ENTSO-E Transparency Platform RESTful API provides programmatic access to the central European electricity market dataset published under EU Regulation 543/2013 - day-ahead prices, system load, generation, transmission, balancing, outages, and congestion management data for bidding zones, control areas, and borders across Europe. The API is deliberately NOT a resource-per-path REST design: it exposes a single endpoint (GET or POST /api) and the data item you receive is selected by coded query parameters - documentType (e.g. A44 = price document, A65 = system total load, A75 = actual generation per type, A85 = imbalance prices), processType (e.g. A01 = day ahead, A16 = realised), psrType (production types B01-B24), businessType, and domain parameters populated with EIC area codes (e.g. 10YCZ-CEPS-----N). Responses are XML market documents defined by the IEC 62325-451 standards (Publication_MarketDocument, GL_MarketDocument, Balancing_MarketDocument, TransmissionNetwork_MarketDocument); a few data items (imbalance prices and volumes, outages) return a ZIP archive of XML documents. All timestamps are UTC. Rejections and empty results return an Acknowledgement_MarketDocument with a Reason code (999 = no matching data found). Access is free - register on the Transparency Platform, request Restful API access from transparency@entsoe.eu, and generate a security token under My Account Settings.
-
-
-    Common data-item recipes (mandatory parameters beyond securityToken and periodStart/periodEnd):
-
-    - Day-ahead prices [12.1.D] - documentType=A44, in_Domain and out_Domain set to the SAME bidding-zone EIC code. One-year range limit.
-
-    - Actual total load [6.1.A] - documentType=A65, processType=A16, outBiddingZone_Domain. Day-ahead load forecast [6.1.B] uses processType=A01; week/month/year-ahead use A31/A32/A33.
-
-    - Actual generation per production type [16.1.B&C] - documentType=A75, processType=A16, in_Domain; optional psrType filters to one production type.
-
-    - Installed generation capacity aggregated [14.1.A] - documentType=A68, processType=A33, in_Domain.
-
-    - Wind and solar forecast [14.1.D] - documentType=A69, processType=A01 (or A40 intraday), in_Domain.
-
-    - Cross-border physical flows [12.1.G] - documentType=A11, in_Domain, out_Domain (one direction per request; swap domains for the other).
-
-    - Forecasted transfer capacities [11.1.A] - documentType=A61, contract_MarketAgreement.Type (A01 daily - A04 yearly), in_Domain, out_Domain.
-
-    - Accepted aggregated offers [17.1.D] - documentType=A82, controlArea_Domain; optional businessType (A95 FCR, A96 FRR, A97 replacement reserve, A98 interconnector trading).
-
-    - Activated balancing energy [17.1.E] - documentType=A83, controlArea_Domain.
-
-    - Imbalance prices [17.1.G] - documentType=A85, controlArea_Domain (returns ZIP of XML).
-
-    - Total imbalance volumes [17.1.H] - documentType=A86, controlArea_Domain (returns ZIP of XML).
-
-    - Contracted reserves [17.1.B] / prices of contracted reserves [17.1.C] - documentType=A81 / A89, type_MarketAgreement.Type, controlArea_Domain.'
+  description: The ENTSO-E Transparency Platform RESTful API provides programmatic access to the central European electricity market dataset published under EU Regulation 543/2013 - day-ahead prices, system load, generation, transmission, balancing, outages, and congestion management data for bidding zones, control areas, and borders across Europe.
   version: '1.0'
   contact:
     name: ENTSO-E Transparency Platform Helpdesk
@@ -414,54 +387,6 @@ paths:
           description: More than 400 requests per minute from one IP address or security token.
 components:
   schemas:
-    AcknowledgementMarketDocument:
-      type: object
-      description: IEC 62325-451-1 acknowledgement document returned when a request is rejected or matches no data. Reason code 999 with text "No matching data found" indicates an empty result; other reasons include missing mandatory parameters, ranges over the one-year limit, and document counts over the 100/200-document limit.
-      properties:
-        mRID:
-          type: string
-        createdDateTime:
-          type: string
-          format: date-time
-        Reason:
-          type: object
-          properties:
-            code:
-              type: string
-              example: '999'
-            text:
-              type: string
-              example: No matching data found
-    StatusRequestMarketDocument:
-      type: object
-      description: IEC 62325-451-5 status request document (namespace urn:iec62325.351:tc57wg16:451-5:statusrequestdocument:4:0) used as the POST body. type is A59; each query parameter is expressed as an AttributeInstanceComponent with capitalized attribute names (DocumentType, ProcessType, In_Domain, Out_Domain, TimeInterval, ...).
-      properties:
-        mRID:
-          type: string
-          example: SampleCallToRestfulApi
-        type:
-          type: string
-          example: A59
-        sender_MarketParticipant.mRID:
-          type: string
-          example: 10X1001A1001A450
-        receiver_MarketParticipant.mRID:
-          type: string
-          example: 10X1001A1001A450
-        createdDateTime:
-          type: string
-          format: date-time
-        AttributeInstanceComponent:
-          type: array
-          items:
-            type: object
-            properties:
-              attribute:
-                type: string
-                example: DocumentType
-              attributeValue:
-                type: string
-                example: A44
     MarketDocument:
       type: object
       description: An IEC 62325-451 market document. The concrete root element depends on the data item queried - Publication_MarketDocument (prices, flows, capacities, schedules; namespace urn:iec62325.351:tc57wg16:451-3), GL_MarketDocument (load and generation; 451-6 generation-load), Balancing_MarketDocument (balancing; 451-6 balancing), TransmissionNetwork_MarketDocument, or Unavailability_MarketDocument (outages, inside ZIP). All share the mRID/type/sender/receiver/ period/TimeSeries structure below; TimeSeries Points carry position/quantity pairs, or position/price.amount (EUR per MWh) for price documents.
@@ -532,6 +457,54 @@ components:
                         price.amount:
                           type: number
                           description: Price value for price documents (e.g. day-ahead price in currency per MWh).
+    StatusRequestMarketDocument:
+      type: object
+      description: IEC 62325-451-5 status request document (namespace urn:iec62325.351:tc57wg16:451-5:statusrequestdocument:4:0) used as the POST body. type is A59; each query parameter is expressed as an AttributeInstanceComponent with capitalized attribute names (DocumentType, ProcessType, In_Domain, Out_Domain, TimeInterval, ...).
+      properties:
+        mRID:
+          type: string
+          example: SampleCallToRestfulApi
+        type:
+          type: string
+          example: A59
+        sender_MarketParticipant.mRID:
+          type: string
+          example: 10X1001A1001A450
+        receiver_MarketParticipant.mRID:
+          type: string
+          example: 10X1001A1001A450
+        createdDateTime:
+          type: string
+          format: date-time
+        AttributeInstanceComponent:
+          type: array
+          items:
+            type: object
+            properties:
+              attribute:
+                type: string
+                example: DocumentType
+              attributeValue:
+                type: string
+                example: A44
+    AcknowledgementMarketDocument:
+      type: object
+      description: IEC 62325-451-1 acknowledgement document returned when a request is rejected or matches no data. Reason code 999 with text "No matching data found" indicates an empty result; other reasons include missing mandatory parameters, ranges over the one-year limit, and document counts over the 100/200-document limit.
+      properties:
+        mRID:
+          type: string
+        createdDateTime:
+          type: string
+          format: date-time
+        Reason:
+          type: object
+          properties:
+            code:
+              type: string
+              example: '999'
+            text:
+              type: string
+              example: No matching data found
   securitySchemes:
     securityToken:
       type: apiKey
