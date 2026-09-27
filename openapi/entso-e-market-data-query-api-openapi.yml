@@ -387,6 +387,54 @@ paths:
           description: More than 400 requests per minute from one IP address or security token.
 components:
   schemas:
+    StatusRequestMarketDocument:
+      type: object
+      description: IEC 62325-451-5 status request document (namespace urn:iec62325.351:tc57wg16:451-5:statusrequestdocument:4:0) used as the POST body. type is A59; each query parameter is expressed as an AttributeInstanceComponent with capitalized attribute names (DocumentType, ProcessType, In_Domain, Out_Domain, TimeInterval, ...).
+      properties:
+        mRID:
+          type: string
+          example: SampleCallToRestfulApi
+        type:
+          type: string
+          example: A59
+        sender_MarketParticipant.mRID:
+          type: string
+          example: 10X1001A1001A450
+        receiver_MarketParticipant.mRID:
+          type: string
+          example: 10X1001A1001A450
+        createdDateTime:
+          type: string
+          format: date-time
+        AttributeInstanceComponent:
+          type: array
+          items:
+            type: object
+            properties:
+              attribute:
+                type: string
+                example: DocumentType
+              attributeValue:
+                type: string
+                example: A44
+    AcknowledgementMarketDocument:
+      type: object
+      description: IEC 62325-451-1 acknowledgement document returned when a request is rejected or matches no data. Reason code 999 with text "No matching data found" indicates an empty result; other reasons include missing mandatory parameters, ranges over the one-year limit, and document counts over the 100/200-document limit.
+      properties:
+        mRID:
+          type: string
+        createdDateTime:
+          type: string
+          format: date-time
+        Reason:
+          type: object
+          properties:
+            code:
+              type: string
+              example: '999'
+            text:
+              type: string
+              example: No matching data found
     MarketDocument:
       type: object
       description: An IEC 62325-451 market document. The concrete root element depends on the data item queried - Publication_MarketDocument (prices, flows, capacities, schedules; namespace urn:iec62325.351:tc57wg16:451-3), GL_MarketDocument (load and generation; 451-6 generation-load), Balancing_MarketDocument (balancing; 451-6 balancing), TransmissionNetwork_MarketDocument, or Unavailability_MarketDocument (outages, inside ZIP). All share the mRID/type/sender/receiver/ period/TimeSeries structure below; TimeSeries Points carry position/quantity pairs, or position/price.amount (EUR per MWh) for price documents.
@@ -457,54 +505,6 @@ components:
                         price.amount:
                           type: number
                           description: Price value for price documents (e.g. day-ahead price in currency per MWh).
-    StatusRequestMarketDocument:
-      type: object
-      description: IEC 62325-451-5 status request document (namespace urn:iec62325.351:tc57wg16:451-5:statusrequestdocument:4:0) used as the POST body. type is A59; each query parameter is expressed as an AttributeInstanceComponent with capitalized attribute names (DocumentType, ProcessType, In_Domain, Out_Domain, TimeInterval, ...).
-      properties:
-        mRID:
-          type: string
-          example: SampleCallToRestfulApi
-        type:
-          type: string
-          example: A59
-        sender_MarketParticipant.mRID:
-          type: string
-          example: 10X1001A1001A450
-        receiver_MarketParticipant.mRID:
-          type: string
-          example: 10X1001A1001A450
-        createdDateTime:
-          type: string
-          format: date-time
-        AttributeInstanceComponent:
-          type: array
-          items:
-            type: object
-            properties:
-              attribute:
-                type: string
-                example: DocumentType
-              attributeValue:
-                type: string
-                example: A44
-    AcknowledgementMarketDocument:
-      type: object
-      description: IEC 62325-451-1 acknowledgement document returned when a request is rejected or matches no data. Reason code 999 with text "No matching data found" indicates an empty result; other reasons include missing mandatory parameters, ranges over the one-year limit, and document counts over the 100/200-document limit.
-      properties:
-        mRID:
-          type: string
-        createdDateTime:
-          type: string
-          format: date-time
-        Reason:
-          type: object
-          properties:
-            code:
-              type: string
-              example: '999'
-            text:
-              type: string
-              example: No matching data found
   securitySchemes:
     securityToken:
       type: apiKey
