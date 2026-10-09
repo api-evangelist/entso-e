@@ -1,3 +1,7 @@
+# Provenance stamped 2026-10-07 (roadmap#943): written by an API Evangelist sweep (undated — the file carries no date and git cannot supply one), not
+# harvested from the provider. `method: generated` so the economics campaign may replace it with a
+# dated, verbatim transcription; every figure below is unverified until it does.
+method: generated
 plans:
   - name: Free
     description: >-
@@ -31,3 +35,32 @@ plans:
       requests: 400
       period: minute
       ban: 10 minute temporary ban after exceeding limit
+x-canonical:
+  generated: '2026-10-08'
+  vocabulary: all/0-working/economics/plans-canonical.yml
+  models:
+  - free
+  - metered
+  units:
+  - object
+  - period
+  - request
+  plans:
+  - name: Free (Registered)
+    access: free
+    model: metered
+    model_how: derived
+    units:
+    - object
+    - other
+    - request
+    periods:
+    - minute
+    - per-use
+  - name: Free
+    access: other
+    model: free
+    model_how: derived
+    units:
+    - period
+    periods: []
