@@ -1,6 +1,17 @@
 {
   "provider": "entsoe",
   "url": "https://www.entsoe.eu/news/",
-  "fetched": "2026-06-13",
-  "posts": []
+  "fetched": "2026-10-10T13:15:00Z",
+  "posts": [],
+  "repo": "entso-e",
+  "feeds": [
+    {
+      "source": "https://www.entsoe.eu/news/",
+      "feed_url": "https://www.entsoe.eu/rss/news.xml",
+      "title": "",
+      "saved": 1,
+      "method": "discovered"
+    }
+  ],
+  "post_count": 1
 }
