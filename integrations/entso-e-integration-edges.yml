@@ -1,0 +1,42 @@
+edges:
+- partner_name: LF Energy (membership / landscape)
+  partner: lf-energy
+  partner_match: register
+  type: register
+  direction: partner-built
+  category: LF Energy membership
+  evidence: https://github.com/lf-energy/lfenergy-landscape/blob/1364cff4a6379fe8e87568eb5134fd6e8b4ded8e/landscape.yml
+  channel: standard-directory
+  relationship: standard-participant
+  contract_reference:
+    register: LF Energy Landscape (github.com/lf-energy/lfenergy-landscape landscape.yml @1364cff4a6)
+    spec_file: null
+    standard: LF Energy
+    role: lfe-member
+    registered_name: ENTSO-E (European Network of Transmission System Operators)
+    registered_names:
+    - CIMContextor and CIMSyntaxgen
+    - ENTSO-E (European Network of Transmission System Operators)
+    website: https://entsoe.eu/
+    matched_domain: entsoe.eu
+    matched_by: domain
+    landscape_categories:
+    - Shared / Data Management
+    landscape_entries: 1
+    signal_note: 'participation only: LF Energy membership / a landscape listing is standard-participant evidence,
+      not depth. Tier, entries and categories are CONTEXT, never counted'
+    detected_by: sweep-lf-energy-projects.py
+    detected: '2026-10-22'
+  detected_by: sweep-lf-energy-projects.py
+  first_seen: '2026-10-22'
+  partner_tier: 'LF Energy Member: Associate'
+generated: '2026-10-22'
+method: searched
+source:
+- https://landscape.lfenergy.org
+- https://raw.githubusercontent.com/lf-energy/lfenergy-landscape/1364cff4a6379fe8e87568eb5134fd6e8b4ded8e/landscape.yml
+- https://lfenergy.org/projects/
+checked:
+- https://landscape.lfenergy.org
+- https://lfenergy.org/projects/
+- https://raw.githubusercontent.com/lf-energy/lfenergy-landscape/1364cff4a6379fe8e87568eb5134fd6e8b4ded8e/landscape.yml
